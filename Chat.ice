@@ -1,0 +1,5 @@
+module Writing {
+    interface Handler{
+
+    }
+}
