@@ -1,5 +1,0 @@
-module Talking {
-    interface Caller{
-
-    }
-}
