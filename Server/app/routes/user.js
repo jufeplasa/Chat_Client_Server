@@ -5,8 +5,8 @@ const userController = require('../controller/userController'); // Importar el c
 
 router.get('/', userController.getAllUsers);
 router.post('/', userController.createUser);
-router.post('/client',userController.addClient);
-router.get('/client',userController.getAllClients);
+router.post('/client', userController.addClient);
+router.get('/client', userController.getAllClients);
 
 
 
