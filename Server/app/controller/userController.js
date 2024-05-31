@@ -18,7 +18,27 @@ exports.createUser = (req, res) => {
 
 exports.addClient = (req, res) => {
     const { email, username, contact, creditnumber, password } = req.body;
-    const newClient = new client(email, username, contact, creditnumber, password);
-    clients.push(newClient);
-    res.send('cliente agregado creado');
+    if (existData(email,"email")){
+        res.send('Error, el correo ya se encuentra registrado.');
+    }
+    else if(existData(username,"username")){
+        res.send('Error, el usuario ya se encuentra en uso.');
+    }
+    else{
+        const newClient = new client(email, username, contact, creditnumber, password);
+        clients.push(newClient);
+        res.send('cliente agregado creado');
+    }
+  
 };
+
+function existData(value,param){
+    let exist=false;
+    for (let i = 0; i < clients.length; i++) {
+       if(value===clients[i][param]){
+        exist=true;
+        return exist;
+       }
+    }
+    return exist;
+}
