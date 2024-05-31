@@ -12,6 +12,8 @@ function Register() {
     password: "",
     confirmPassword: "",
   });
+  const [message, setMessage] = useState(''); // Añadir estado para manejar el mensaje
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -19,17 +21,49 @@ function Register() {
       [name]: value,
     }));
   };
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    const { email, username, contact, creditcard, password, confirmPassword } =
-      formData;
-    console.log("Email: ", email);
-    console.log("Username: ", username);
-    console.log("Contact: ", contact);
-    console.log("Credit Card: ", creditcard);
-    console.log("Password: ", password);
-    console.log("Confirm Password: ", confirmPassword);
+    const { email, username, contact, creditcard, password, confirmPassword } = formData;
+
+    // Validar que las contraseñas coincidan
+    if (password !== confirmPassword) {
+      setMessage('Passwords do not match!');
+      return;
+    }
+
+    const userData = {
+      email: email,
+      username: username,
+      contact: contact ,
+      creditCard: creditcard,
+      password: password
+    };
+
+    try {
+      const response = await fetch('http://localhost:3000/users/client/', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+      const data = await response.json;
+
+      if (response.ok) {
+        setMessage('Registration successful!');
+        // Navegar a otra página si el registro es exitoso
+        navigate('/login');
+      } else {
+        setMessage(`Registration failed: ${data}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setMessage('An error occurred. Please try again. '+error);
+    }
   };
+
   return (
     <section className={styles.registerContainer}>
       <form className={styles.registerForm} onSubmit={handleSubmit}>
@@ -115,6 +149,7 @@ function Register() {
         <button type="submit" className="btn">
           Register
         </button>
+        {message && <p>{message}</p>} {/* Mostrar el mensaje */}
         <div className="link-text">
           If you already have an account
           <br />
