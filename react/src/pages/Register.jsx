@@ -1,6 +1,8 @@
 import styles from "../styles/Register.module.css";
+import { axiosI } from "../configs/axiosConfig";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 function Register() {
   const navigate = useNavigate();
@@ -12,8 +14,6 @@ function Register() {
     password: "",
     confirmPassword: "",
   });
-  const [message, setMessage] = useState(''); // Añadir estado para manejar el mensaje
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -21,49 +21,56 @@ function Register() {
       [name]: value,
     }));
   };
-
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const { email, username, contact, creditcard, password, confirmPassword } = formData;
+    const { email, username, contact, creditcard, password, confirmPassword } =
+      formData;
 
-    // Validar que las contraseñas coincidan
     if (password !== confirmPassword) {
-      setMessage('Passwords do not match!');
-      return;
-    }
-
-    const userData = {
-      email: email,
-      username: username,
-      contact: contact ,
-      creditCard: creditcard,
-      password: password
-    };
-
-    try {
-      const response = await fetch('http://localhost:3000/users/client/', {
-      method: 'POST',
-      body: JSON.stringify(userData),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-      const data = await response.json;
-
-      if (response.ok) {
-        setMessage('Registration successful!');
-        // Navegar a otra página si el registro es exitoso
-        navigate('/login');
-      } else {
-        setMessage(`Registration failed: ${data}`);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      setMessage('An error occurred. Please try again. '+error);
+      await Swal.fire({
+        title: "Oops!",
+        text: "Las contraseñas no coinciden!",
+        showConfirmButton: false,
+        icon: "error",
+        timer: 2000,
+      });
+    } else {
+      const userData = {
+        email: email,
+        username: username,
+        contact: contact,
+        creditCard: creditcard,
+        password: password,
+      };
+      registerUser(userData);
     }
   };
-
+  const registerUser = async (userData) => {
+    const response = await axiosI
+      .post("/users/client/", userData)
+      .catch((error) => error.response);
+    if (
+      response.data === "Error, el correo ya se encuentra registrado." ||
+      response.data === "Error, el usuario ya se encuentra en uso."
+    ) {
+      await Swal.fire({
+        title: "Oops!",
+        text: `${response.data}`,
+        showConfirmButton: false,
+        icon: "error",
+        timer: 2000,
+      });
+    } else {
+      await Swal.fire({
+        title: "Success!",
+        text: "User registered successfully!",
+        showConfirmButton: false,
+        icon: "success",
+        timer: 2000,
+      });
+      navigate("/login");
+    }
+  };
   return (
     <section className={styles.registerContainer}>
       <form className={styles.registerForm} onSubmit={handleSubmit}>
@@ -149,7 +156,6 @@ function Register() {
         <button type="submit" className="btn">
           Register
         </button>
-        {message && <p>{message}</p>} {/* Mostrar el mensaje */}
         <div className="link-text">
           If you already have an account
           <br />

@@ -1,10 +1,14 @@
+import { saveAuth } from "../redux/slices/authSlice";
+//import { axiosI } from "../configs/axiosConfig";
 import styles from "../styles/Login.module.css";
-import { axiosI } from "../configs/axiosConfig";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -15,10 +19,29 @@ function Login() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { email, password } = formData;
-    console.log("Email: ", email);
-    console.log("Password: ", password);
-    await axiosI.post("/login", formData);
+    //const response = await axiosI
+    //  .post("/login", formData)
+    //  .catch((error) => error.response);
+    const response = { data: "Ok" };
+    if (response.data === "Ok") {
+      await Swal.fire({
+        title: "Success!",
+        text: "Login successful! Redirecting to home page",
+        showConfirmButton: false,
+        icon: "success",
+        timer: 2000,
+      });
+      dispatch(saveAuth({ token: formData.email }));
+      navigate("/");
+    } else {
+      await Swal.fire({
+        title: "Oops!",
+        text: `${response.data}`,
+        showConfirmButton: false,
+        icon: "error",
+        timer: 2000,
+      });
+    }
   };
   return (
     <section className={styles.loginContainer}>
