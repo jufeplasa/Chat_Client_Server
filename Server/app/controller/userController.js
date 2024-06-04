@@ -1,4 +1,3 @@
-
 const client= require('../model/client');
 
 let clients = []
@@ -31,6 +30,30 @@ exports.addClient = (req, res) => {
     }
   
 };
+
+exports.login = (req, res) => {
+    const { email, password } = req.body;
+    let count= findClient(email,"email") || null
+    if (count === null){
+        res.send(false);
+    }
+    else{
+        if(count.password===password){
+            res.send(true);
+        }
+        res.send(false);
+    }
+  
+};
+
+function findClient(value,param){
+    for (let i = 0; i < clients.length; i++) {
+       if(value===clients[i][param]){
+       
+        return clients[i];
+       }
+    }
+}
 
 function existData(value,param){
     let exist=false;
