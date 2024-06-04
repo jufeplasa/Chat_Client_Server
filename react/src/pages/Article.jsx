@@ -8,6 +8,7 @@ function Article() {
     price: "",
     quantity: "",
     labels: "",
+    url: "",
   });
   const handleInputChange = (e) => {
     const { name, value } = e.target;
