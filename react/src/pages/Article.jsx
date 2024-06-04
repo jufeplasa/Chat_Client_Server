@@ -1,5 +1,8 @@
 import UserIcon from "/src/assets/user-icon.png";
 import { Card, SideBar } from "../components";
+
+import Swal from "sweetalert2";
+import { axiosI } from "../configs/axiosConfig";
 import { useState } from "react";
 
 function Article() {
@@ -7,8 +10,7 @@ function Article() {
     name: "",
     price: "",
     quantity: "",
-    labels: "",
-    url: "",
+    labels: ""
   });
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -24,6 +26,34 @@ function Article() {
       labels: value,
     }));
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const response = await axiosI
+      .post("/product/register", formData)
+     .catch((error) => error.response);
+    console.log(response);
+    console.log(response.status);
+    if (response.status === 201) {
+      await Swal.fire({
+        title: "Success!",
+        text: "Product added successful",
+        showConfirmButton: false,
+        icon: "success",
+        timer: 2000,
+      });
+      dispatch(saveAuth({ token: formData.email }));
+      navigate("/");
+    } else {
+      await Swal.fire({
+        title: "Oops!",
+        text: `${response.data}`,
+        showConfirmButton: false,
+        icon: "error",
+        timer: 2000,
+      });
+    }
+  }; 
   return (
     <div className="container">
       <SideBar activeName={"article"} />
@@ -53,6 +83,7 @@ function Article() {
               padding: "20px",
               alignItems: "self-start",
             }}
+            onSubmit={handleSubmit}
           >
             <div className="article-form-group">
               <label className="article-label" htmlFor="name">
@@ -119,7 +150,7 @@ function Article() {
                 </div>
               )}
             </div>
-            <button type="button" className="add-btn">
+            <button type="submit" className="add-btn">
               + Add
             </button>
           </form>

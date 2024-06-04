@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useEffect } from "react";
 
 function Home() {
+  
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
   useEffect(() => {

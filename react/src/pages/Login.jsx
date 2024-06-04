@@ -1,5 +1,5 @@
 import { saveAuth } from "../redux/slices/authSlice";
-//import { axiosI } from "../configs/axiosConfig";
+import { axiosI } from "../configs/axiosConfig";
 import styles from "../styles/Login.module.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -19,11 +19,10 @@ function Login() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //const response = await axiosI
-    //  .post("/login", formData)
-    //  .catch((error) => error.response);
-    const response = { data: "Ok" };
-    if (response.data === "Ok") {
+    const response = await axiosI
+      .post("/users/login/", formData)
+     .catch((error) => error.response);
+    if (response.data === true) {
       await Swal.fire({
         title: "Success!",
         text: "Login successful! Redirecting to home page",

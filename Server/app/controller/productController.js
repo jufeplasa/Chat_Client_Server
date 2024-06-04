@@ -7,19 +7,19 @@ exports.getAllProducts = (req, res) => {
 };
 
 exports.createProduct = (req, res) => {
-    const { id, name, price, quantity, labels, url } = req.body;
+    const { name, price, quantity, labels} = req.body;
 
-    if (!id || !name || !price || price <= 0 || !quantity || quantity <= 0 || !url) {
+    if ( !name || !price || price <= 0 || !quantity || quantity <= 0 ) {
         return res.status(400).send("Todos los campos son obligatorios o hay algún campo inválido.");
     }
 
     // Verificar si el ID ya existe
-    const existingProduct = products.find(product => product.id === id);
-    if (existingProduct) {
-        return res.status(400).send("El ID proporcionado ya existe para otro producto.");
-    }
+    // const existingProduct = products.find(product => product.id === id);
+    // if (existingProduct) {
+    //     return res.status(400).send("El ID proporcionado ya existe para otro producto.");
+    // }
 
-    const newProduct = new Product(id, name, price, quantity, labels, url);
+    const newProduct = new Product( name, price, quantity, labels);
 
     products.push(newProduct);
     res.status(201).send("Producto creado exitosamente.");
